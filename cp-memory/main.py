@@ -61,7 +61,6 @@ except:
 if not alarm.wake_alarm:          # reset
   counter = 0
   mem_type = mem_type + 'R'
-  counter  = (int(mem_array[42])+1) % 256
 else:
   counter  = (int(mem_array[42])+1) % 256
   mem_type = mem_type + 'W'       # wakeup
