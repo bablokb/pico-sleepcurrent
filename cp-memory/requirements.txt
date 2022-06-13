@@ -1,0 +1,4 @@
+adafruit_displayio_ssd1306==1.5.3
+adafruit_bitmap_font==1.5.6
+adafruit_register==1.9.8
+adafruit_display_text==2.22.3
