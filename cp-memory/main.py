@@ -1,3 +1,11 @@
+#-----------------------------------------------------------------------------
+# Test program pico-sleep modes (sleep-memory/nvram/wake_alarm)
+#
+# Author: Bernhard Bablok
+#
+# Website: https://github.com/pico-sleepcurrent
+#-----------------------------------------------------------------------------
+
 import time
 import board
 import alarm
