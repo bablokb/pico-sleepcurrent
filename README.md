@@ -75,7 +75,7 @@ Pin Deep-Sleep
 --------------
 
 This is the best option you have (if you don't need to keep the RTC-state).
-Recommandation: use an external RTC to drive the pin-alarm and update the
+Recommendation: use an external RTC to drive the pin-alarm and update the
 internal RTC after restart.
 
 ![](images/pico-pin-deep-sleep.png)
