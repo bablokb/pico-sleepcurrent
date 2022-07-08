@@ -32,7 +32,7 @@ Spinning
 
 In this mode, the program just uses an active loop to "sleep":
 
-![](pico-spin.png)
+![](images/pico-spin.png)
 
 
 Sleep
@@ -41,7 +41,7 @@ Sleep
 Here the program uses `time.sleep()`. There is no difference to spinning,
 since the pico-SDK implements sleeping with a busy-loop.
 
-![](pico-sleep.png)
+![](images/pico-sleep.png)
 
 
 Timer Light-Sleep
@@ -50,7 +50,7 @@ Timer Light-Sleep
 This will reduce current consumption considerably. Note that the RTC keeps
 its time during sleep.
 
-![](pico-timer-light-sleep.png)
+![](images/pico-timer-light-sleep.png)
 
 
 Timer Deep-Sleep
@@ -59,7 +59,7 @@ Timer Deep-Sleep
 This will reduce current consumption even more. The drawback is that the RTC
 looses its time after wakeup. Also, the restart consumes additional current.
 
-![](pico-timer-deep-sleep.png)
+![](images/pico-timer-deep-sleep.png)
 
 
 Pin Light-Sleep
@@ -68,7 +68,7 @@ Pin Light-Sleep
 This is comparable to timer-based light-sleep. The only thing to notice is
 the reduced noise.
 
-![](pico-pin-light-sleep.png)
+![](images/pico-pin-light-sleep.png)
 
 
 Pin Deep-Sleep
@@ -78,7 +78,7 @@ This is the best option you have (if you don't need to keep the RTC-state).
 Recommandation: use an external RTC to drive the pin-alarm and update the
 internal RTC after restart.
 
-![](pico-pin-deep-sleep.png)
+![](images/pico-pin-deep-sleep.png)
 
 
 3V3_EN pin
@@ -89,4 +89,4 @@ With additional circuitry, you can control the pico via the 3V3_EN-pin
 [TPL5111 enable-timer-breakout](https://adafru.it/3573). An example program
 is in [cp-enable/main.py](cp-enable/main.py).
 
-![](pico-enable.png)
+![](images/pico-enable.png)
