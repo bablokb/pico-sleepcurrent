@@ -35,6 +35,11 @@ In this mode, the program just uses an active loop to "sleep":
 ![](images/pico-spin.png)
 
 
+Early data for the Pico-W (CircuitPython-8.0.0-beta.1):
+
+![](images/picow-spin.png)
+
+
 Sleep
 -----
 
@@ -52,6 +57,10 @@ its time during sleep.
 
 ![](images/pico-timer-light-sleep.png)
 
+Early data for the Pico-W (CircuitPython-8.0.0-beta.1):
+
+![](images/picow-timer-light-sleep.png)
+
 
 Timer Deep-Sleep
 -----------------
@@ -60,6 +69,10 @@ This will reduce current consumption even more. The drawback is that the RTC
 looses its time after wakeup. Also, the restart consumes additional current.
 
 ![](images/pico-timer-deep-sleep.png)
+
+Early data for the Pico-W (CircuitPython-8.0.0-beta.1):
+
+![](images/picow-timer-deep-sleep.png)
 
 
 Pin Light-Sleep
