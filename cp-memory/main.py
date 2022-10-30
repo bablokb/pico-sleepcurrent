@@ -81,5 +81,5 @@ display.show(group)
 time.sleep(5)
 
 mem_array[42] = counter
-timer = alarm.time.TimeAlarm(monotonic_time=time.monotonic() + 20)
+timer = alarm.time.TimeAlarm(monotonic_time=time.monotonic() + 10)
 alarm.exit_and_deep_sleep_until_alarms(timer)
