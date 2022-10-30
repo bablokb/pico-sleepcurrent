@@ -73,6 +73,7 @@ else:
   counter  = (int(mem_array[42])+1) % 256
   mem_type = mem_type + 'W'       # wakeup
 
+print("wake_alarm: %r" % alarm.wake_alarm)
 print("mem_type: %s" % mem_type)
 print("counter:  %d" % counter)
 t_top.text = mem_type
