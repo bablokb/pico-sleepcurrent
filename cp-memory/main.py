@@ -10,6 +10,8 @@ import time
 import board
 import alarm
 import microcontroller
+from digitalio import DigitalInOut, Direction, Pull
+
 
 # output to OLED-display (deep-sleep won't work with usb-serial)
 import busio
@@ -24,8 +26,10 @@ from adafruit_bitmap_font import bitmap_font
 
 # --- initialization   -------------------------------------------------------
 
-PIN_SDA = board.GP18
-PIN_SCL = board.GP19
+PIN_SDA  = board.GP18
+PIN_SCL  = board.GP19
+PIN_WAKE = board.GP20
+
 displayio.release_displays()
 i2c = busio.I2C(sda=PIN_SDA,scl=PIN_SCL,frequency=400000)
 display_bus = displayio.I2CDisplay(i2c, device_address=OLED_ADDR)
@@ -54,6 +58,14 @@ t_bot = label.Label(FONT_S,text='0',color=FG_COLOR,
                     anchor_point=POS_MAP['SW'][0])
 t_bot.anchored_position = POS_MAP['SW'][1]
 group.append(t_bot)
+t_slp = label.Label(FONT_S,text='',color=FG_COLOR,
+                    anchor_point=POS_MAP['SE'][0])
+t_slp.anchored_position = POS_MAP['SE'][1]
+group.append(t_slp)
+t_alm = label.Label(FONT_S,text='',color=FG_COLOR,
+                    anchor_point=POS_MAP['NE'][0])
+t_alm.anchored_position = POS_MAP['NE'][1]
+group.append(t_alm)
 
 
 # --- main   -----------------------------------------------------------------
@@ -69,18 +81,29 @@ except:
 if not alarm.wake_alarm:          # reset
   counter = 0
   mem_type = mem_type + 'R'
+  t_alm.text = "reset"
 else:
   counter  = (int(mem_array[42])+1) % 256
   mem_type = mem_type + 'W'       # wakeup
+  if isinstance(alarm.wake_alarm,alarm.time.TimeAlarm):
+    t_alm.text = "time"
+  else:
+    t_alm.text = "pin"
 
 print("wake_alarm: %r" % alarm.wake_alarm)
 print("mem_type: %s" % mem_type)
 print("counter:  %d" % counter)
 t_top.text = mem_type
 t_bot.text = "{0:d}".format(counter)
+t_slp.text = "active"
 display.show(group)
-time.sleep(5)
+time.sleep(2)
 
 mem_array[42] = counter
+pin   = alarm.pin.PinAlarm(PIN_WAKE,value=False,edge=True,pull=True)
 timer = alarm.time.TimeAlarm(monotonic_time=time.monotonic() + 10)
-alarm.exit_and_deep_sleep_until_alarms(timer)
+
+t_slp.text = "sleep"
+display.show(group)
+time.sleep(0.5)
+alarm.exit_and_deep_sleep_until_alarms(timer,pin)
