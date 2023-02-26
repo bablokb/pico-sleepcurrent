@@ -7,3 +7,4 @@ adafruit*
 *secrets.py
 boot_out.txt
 *.stl
+c-timer
