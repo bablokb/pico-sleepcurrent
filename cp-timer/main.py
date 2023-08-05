@@ -8,6 +8,7 @@
 
 import time
 import board
+import microcontroller
 import alarm
 from digitalio import DigitalInOut, Direction, Pull
 
@@ -18,7 +19,13 @@ SPIN         = 0x1
 SLEEP        = 0x2
 LIGHT_SLEEP  = 0x3
 DEEP_SLEEP   = 0x4
-MODE         = SPIN
+MODE         = LIGHT_SLEEP
+
+CPU_FREQ_DEF = 125000000
+CPU_FREQ     =  40000000
+#CPU_FREQ     = None
+
+# --- create objects   --------------------------------------------------------
 
 if hasattr(board,'NEOPIXEL'):
   import neopixel_write
@@ -46,8 +53,22 @@ def work():
 
 # --- main loop   ------------------------------------------------------------
 
+if CPU_FREQ:
+  freqs = [CPU_FREQ_DEF,CPU_FREQ]
+  flip = int(alarm.sleep_memory[0] > 0)
+  print(f"cpu-frequency: {microcontroller.cpu.frequency}")
+
 while True:
+  # toggle frequency every second cycle
+  if CPU_FREQ:
+    microcontroller.cpu.frequency = freqs[flip]
+    flip = 1 - flip
+    print(f"cpu-frequency: {microcontroller.cpu.frequency}")
+
+  # do some work
   work()
+
+  # sleep
   if MODE == SPIN:
     next = time.monotonic() + INT_TIME
     while time.monotonic() < next:
@@ -58,5 +79,7 @@ while True:
     time_alarm = alarm.time.TimeAlarm(monotonic_time=time.monotonic()+INT_TIME)
     alarm.light_sleep_until_alarms(time_alarm)
   elif MODE == DEEP_SLEEP:
+    if CPU_FREQ:
+      alarm.sleep_memory[0] = flip
     time_alarm = alarm.time.TimeAlarm(monotonic_time=time.monotonic()+INT_TIME)
     alarm.exit_and_deep_sleep_until_alarms(time_alarm)
