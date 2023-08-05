@@ -26,6 +26,15 @@ Measurements were performed using the project
 <https://github.com/bablokb/circuitpython-vameter> and plotted with
 <https://github.com/bablokb/py-datamon>.
 
+Note that these are results with older versions of CircuitPython. With
+CircuitPython 8.2.0, current consumption is generally lower and there
+is now a difference between spinning and sleeping. Also, starting with
+8.2.0, CircuitPython supports changing the cpu-frequency. Minimizing
+the frequency before going to sleep will result in even lower values.
+
+The following sections will be updated (hopefully soon) to reflect the
+new results.
+
 
 Spinning
 --------
