@@ -13,10 +13,12 @@ from digitalio import DigitalInOut, Direction, Pull
 
 try:
   import alarm
-  ds_2nd = int(alarm.sleep_memory[0] > 0)
+  wake_alarm = alarm.wake_alarm
+  ds_2nd = int(alarm.sleep_memory[0]) > 0
 except:
   print("warning: no alarm-module: only SPIN/SLEEP/SLOW-tests available")
   ds_2nd = None
+  wake_alarm = "unsupported"
 
 try:
   import wifi
@@ -60,11 +62,14 @@ if ds_2nd:
   # deep-sleep second iteration after reset()
   TESTS = [(DEEP_SLEEP,False,True)]   # deep-sleep with pin-alarm
 else:
-  TESTS = [(SLEEP,None,None),
+  TESTS = [
+           (SLEEP,None,None),
            (SLOW_SLEEP,None,None),
-           (LIGHT_SLEEP,True,False),
            (LIGHT_SLEEP,False,True),
-           (DEEP_SLEEP,True,False)]   # deep-sleep with time-alarm
+           (LIGHT_SLEEP,True,False),
+           (LIGHT_SLEEP,True,True),
+           (DEEP_SLEEP,True,False)    # deep-sleep with time-alarm
+           ]
   #TESTS = [(DEEP_SLEEP,True,False)]
 
 # --- create objects   --------------------------------------------------------
@@ -83,7 +88,7 @@ else:
 # --- simulate work   --------------------------------------------------------
 
 def work():
-  msg(f"working for {WORK_TIME}s, blinking every {LED_TIME}s ...")
+  msg(f"working for {WORK_TIME}s ({wake_alarm=})...")
   start = time.monotonic()
   end = start + WORK_TIME-2*LED_TIME
   while time.monotonic() < end:
@@ -114,6 +119,7 @@ def connect(ssid,password):
   print(f"  connected: {wifi.radio.connected}")
   if not wifi.radio.connected:
     raise ConnectionError(f"could not connect to {ssid}")
+  time.sleep(1)
 
 # --- create alarms   --------------------------------------------------------
 
@@ -134,14 +140,15 @@ def msg(msg):
   msg = f"{time.monotonic():9.3f}: {msg}"
   print(msg)
   if HAVE_WIFI and wifi.radio.enabled:
-    try:
-      with pool.socket(family=socketpool.SocketPool.AF_INET,
-                       type=socketpool.SocketPool.SOCK_DGRAM) as socket:
-        socket.sendto(
-          bytes(f'{msg}\n',"UTF-8"),
-          (secrets.udp_ip,secrets.udp_port))
-    except Exception as ex:
-      print(f"socket.sendto: exception: {ex}")
+    for _ in range(3):
+      try:
+        with pool.socket(family=socketpool.SocketPool.AF_INET,
+                         type=socketpool.SocketPool.SOCK_DGRAM) as socket:
+          socket.sendto(
+            bytes(f'{msg}\n',"UTF-8"),
+            (secrets.udp_ip,secrets.udp_port))
+      except Exception as ex:
+        print(f"socket.sendto: exception: {ex}")
 
 # --- main loop   ------------------------------------------------------------
 
@@ -184,16 +191,16 @@ while True:
       if HAVE_WIFI and TOGGLE_WIFI:
         wifi.radio.enabled = True
         connect(secrets.ssid,secrets.password)
-        msg("WIFI enabled")
+        msg("WIFI re-enabled and reconnected")
     elif mode == LIGHT_SLEEP:
-      if HAVE_WIFI and TOGGLE_WIFI:
-        msg("disabling WIFI")
-        wifi.radio.enabled = False
+      #if HAVE_WIFI and TOGGLE_WIFI:
+      #  msg("disabling WIFI")
+      #  wifi.radio.enabled = False
       alarm.light_sleep_until_alarms(*get_alarms(time_alarm,pin_alarm))
       if HAVE_WIFI and TOGGLE_WIFI:
-        wifi.radio.enabled = True
+        #wifi.radio.enabled = True
         connect(secrets.ssid,secrets.password)
-        msg("WIFI enabled")
+        msg("WIFI reconnected")
       WORK_TIME *= 1.5
     elif mode == DEEP_SLEEP:
       alarm.exit_and_deep_sleep_until_alarms(*get_alarms(time_alarm,pin_alarm))
