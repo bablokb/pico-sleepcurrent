@@ -65,8 +65,8 @@ else:
   TESTS = [
            (SLEEP,None,None),
            (SLOW_SLEEP,None,None),
-           (LIGHT_SLEEP,False,True),
            (LIGHT_SLEEP,True,False),
+           (LIGHT_SLEEP,False,True),
            (LIGHT_SLEEP,True,True),
            (DEEP_SLEEP,True,False)    # deep-sleep with time-alarm
            ]
@@ -88,7 +88,7 @@ else:
 # --- simulate work   --------------------------------------------------------
 
 def work():
-  msg(f"working for {WORK_TIME}s ({wake_alarm=})...")
+  msg(f"working for {WORK_TIME}s (last wake-alarm: {wake_alarm})...")
   start = time.monotonic()
   end = start + WORK_TIME-2*LED_TIME
   while time.monotonic() < end:
@@ -197,11 +197,12 @@ while True:
       #  msg("disabling WIFI")
       #  wifi.radio.enabled = False
       alarm.light_sleep_until_alarms(*get_alarms(time_alarm,pin_alarm))
+      wake_alarm = alarm.wake_alarm
       if HAVE_WIFI and TOGGLE_WIFI:
         #wifi.radio.enabled = True
         connect(secrets.ssid,secrets.password)
         msg("WIFI reconnected")
-      WORK_TIME *= 1.5
+      WORK_TIME += 5
     elif mode == DEEP_SLEEP:
       alarm.exit_and_deep_sleep_until_alarms(*get_alarms(time_alarm,pin_alarm))
       WORK_TIME *= 1.5    # this should have no effect due to reset!
