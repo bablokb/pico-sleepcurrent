@@ -56,6 +56,7 @@ CPU_FREQ_SLEEP =  25_000_000
 # --- configuration   ----------------------------------------------------------
 
 TOGGLE_WIFI = True
+ENABLE_WIFI = True
 
 # tests: list of (sleep-mode,time-alarm,pin-alarm)
 if ds_2nd:
@@ -120,6 +121,17 @@ def connect(ssid,password):
   if not wifi.radio.connected:
     raise ConnectionError(f"could not connect to {ssid}")
   time.sleep(1)
+
+# --- wifi restart   ---------------------------------------------------------
+
+def wifi_restart():
+  if HAVE_WIFI:
+    if ENABLE_WIFI:
+      wifi.radio.enabled = True
+      msg("WIFI re-enabled")
+    if TOGGLE_WIFI:
+      connect(secrets.ssid,secrets.password)
+      msg("WIFI reconnected")
 
 # --- create alarms   --------------------------------------------------------
 
@@ -188,20 +200,11 @@ while True:
       msg(f"cpu-frequency slow: {microcontroller.cpu.frequency}")
       time.sleep(INT_TIME)
       microcontroller.cpu.frequency = CPU_FREQ_DEF
-      if HAVE_WIFI and TOGGLE_WIFI:
-        wifi.radio.enabled = True
-        connect(secrets.ssid,secrets.password)
-        msg("WIFI re-enabled and reconnected")
+      wifi_restart()
     elif mode == LIGHT_SLEEP:
-      #if HAVE_WIFI and TOGGLE_WIFI:
-      #  msg("disabling WIFI")
-      #  wifi.radio.enabled = False
       alarm.light_sleep_until_alarms(*get_alarms(time_alarm,pin_alarm))
       wake_alarm = alarm.wake_alarm
-      if HAVE_WIFI and TOGGLE_WIFI:
-        #wifi.radio.enabled = True
-        connect(secrets.ssid,secrets.password)
-        msg("WIFI reconnected")
+      wifi_restart()
       WORK_TIME += 5
     elif mode == DEEP_SLEEP:
       alarm.exit_and_deep_sleep_until_alarms(*get_alarms(time_alarm,pin_alarm))
