@@ -15,8 +15,38 @@ E.g.:
     circup --path path-to-pico install -r cp-memory/requirements.txt
 
 
-Results
-=======
+New Results
+===========
+
+I (re)implemented CircuitPython light-sleep/deep-sleep for the RP2040
+and RP2350. With the reimplementation, light-sleep levels are down to
+deep-sleep levels (e.g. from 15mA to 1.6mA). You can read about the
+results here: [./pico_pico2_current.md](./pico_pico2_current.md).
+
+The [PR for CircuitPython](https://github.com/adafruit/circuitpython/pull/10023)
+was *not* accepted, mainly for two reasons:
+
+  - it changes semantics within a major revision (in this case 9.x.x)
+  - it prioritizes power-saving versus "keep every thing running" in
+    light-sleep mode. Read the discussion of the PR to gain an
+    understanding of the background.
+
+The first problem could be solved with the start of the new 10.x.x
+development cycle. The second problem is more of a philisophical issue:
+I don't think it makes sense to "keep things running" when requesting
+sleep - this is contradictory, since using light-sleep instead of normal
+time.sleep() is for maximising power-savings and you can't sleep and work
+at the same time. Implementing these phantasies would be hard work with
+almost no effect and certainly no practical use.
+
+Anyone needing alarms and advanced sleep modes for the RP2350 (or
+improved light-sleep for the RP2040) can download and apply the
+necessary patch from
+[here](https://github.com/bablokb/circuitpython-patches).
+
+
+Old Results
+===========
 
 All programs simulate "work" with the on-board LED or neopixel (one second
 on within every 30 seconds). Inbetween the pico goes to sleep and uses
